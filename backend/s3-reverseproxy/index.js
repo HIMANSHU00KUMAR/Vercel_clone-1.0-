@@ -1,10 +1,20 @@
 import express from 'express';
 import httpProxy from 'http-proxy'
+import dotenv from 'dotenv';
+
+
+dotenv.config()
 
 const app = express()
 const PORT = 8000
 
-const BASE_PATH = 'https://hks3-bucket.s3.amazonaws.com/__outputs'
+const bucket_name = process.env.BUCKET_NAME;
+
+
+
+const BASE_PATH = `https://${bucket_name}.s3.amazonaws.com/__outputs`
+
+console.log("base",BASE_PATH)
 const proxy = httpProxy.createProxy()
 
 app.use((req, res) => {

@@ -4,10 +4,14 @@ import { ECSClient, RunTaskCommand } from '@aws-sdk/client-ecs';
 import cors from 'cors';
 import Redis from 'ioredis';
 import { Server } from 'socket.io';
+import dotenv from 'dotenv';
 
+dotenv.config()
 
 const io = new Server({ cors: '*' })
-const subscriber = new Redis('')
+
+
+const subscriber = new Redis(process.env.REDIS_ID)
 
 const app = express()
 const PORT = 9000
@@ -28,16 +32,16 @@ io.listen(9002, () => console.log('Socket Server 9002'))
 
 
 const ecsClient = new ECSClient({
-    region:'',
+    region:process.env.REGION,
     credentials: {
-        accessKeyId: 'your-aws-access-key-id',
-        secretAccessKey: 'your-aws-secret-access-key'
+        accessKeyId: process.env.ACCESS_ID,
+        secretAccessKey: process.env.SECRET_KEY
     }
 })
 
 const config = {
-    CLUSTER: '',
-    TASK: ''
+    CLUSTER: process.env.CLUSTER,
+    TASK: process.env.TASK
 }
 
 
@@ -56,14 +60,14 @@ app.post('/project', async (req, res) => {
         networkConfiguration: {
             awsvpcConfiguration: {
                 assignPublicIp: 'ENABLED',
-                subnets: ['', '', ''],
-                securityGroups: ['']
+                subnets: ['subnet-01db5ec4b92681ff4', 'subnet-0b916cea9d2def423', 'subnet-06f50c21a9bb7e09f'],
+                securityGroups: ['sg-0ef82ad1777f0fca2']
             }
         },
         overrides: {
             containerOverrides: [
                 {
-                    name: 'image name',
+                    name: process.env.IMAGE_NAME,
                     environment: [
                         { name: 'GIT_REPOSITORY__URL', value: gitURL },
                         { name: 'PROJECT_ID', value: projectSlug }

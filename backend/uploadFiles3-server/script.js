@@ -6,8 +6,12 @@ import mime from 'mime';
 import dotenv from "dotenv";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Redis } from "ioredis";
+import dotenv from 'dotenv';
 
-const publisher = new Redis('')
+dotenv.config()
+
+
+const publisher = new Redis(process.env.REDIS_ID)
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,10 +25,10 @@ function publishLog(log) {
 }
 
 const s3Client=new S3Client({
-    region:'us-east-1',
+    region:process.env.REGION,
     credentials: {
-        accessKeyId: '',
-        secretAccessKey: ''
+        accessKeyId: process.env.ACCESS_ID,
+        secretAccessKey: process.env.SECRET_KEY
     }
 })
 
@@ -65,7 +69,7 @@ async function init(){
             const contentType = mime.getType(filePath);
 
             const command = new PutObjectCommand({
-                Bucket: 'hks3-bucket',
+                Bucket: process.env.BUCKET_NAME,
                 Key: `__outputs/${PROJECT_ID}/${file}`,
                 Body: fs.createReadStream(filePath),
                 ContentType:contentType
