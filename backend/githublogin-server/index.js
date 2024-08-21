@@ -3,8 +3,10 @@ import fetch from 'node-fetch'
 import bodyParser from 'body-parser'
 import axios from 'axios';
 import cors from 'cors'
+import dotenv from 'dotenv';
 
 
+dotenv.config()
 
 
 const app = express();
@@ -38,7 +40,7 @@ app.post('/auth/github/callback', async (req, res) => {
       }
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server started on http://localhost:${PORT}`);
 });

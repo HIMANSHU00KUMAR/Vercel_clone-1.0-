@@ -36,9 +36,12 @@ const GitHubLogin: React.FC = () => {
   }, []);
 
   return (
-    <button onClick={loginWithGitHub}>
+    <div className="flex justify-center align-middle my-80">
+      <button className="bg-green-500 text-xl rounded-md font-bold p-2 " onClick={loginWithGitHub}>
       Login with GitHub
     </button>
+    </div>
+    
   );
 };
 
