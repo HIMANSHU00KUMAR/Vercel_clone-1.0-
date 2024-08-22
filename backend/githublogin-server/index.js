@@ -13,8 +13,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors())
 
-const CLIENT_ID = 'Ov23liRF2DZxKXgwErs3';
-const CLIENT_SECRET = '888e4980263f6d627ac061b1926963d76799554f';
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 app.post('/auth/github/callback', async (req, res) => {
   const { code } = req.body;

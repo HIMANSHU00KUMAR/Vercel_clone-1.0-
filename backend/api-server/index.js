@@ -14,7 +14,7 @@ const io = new Server({ cors: '*' })
 const subscriber = new Redis(process.env.REDIS_ID)
 
 const app = express()
-const PORT = 9000
+const PORT = process.env.PORT
 app.use(cors());
 app.use(express.json())
 

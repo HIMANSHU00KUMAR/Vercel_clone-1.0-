@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 const app = express()
-const PORT = 8000
+const PORT = process.env.PORT
 
 const bucket_name = process.env.BUCKET_NAME;
 
