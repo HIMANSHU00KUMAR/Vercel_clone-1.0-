@@ -6,7 +6,7 @@ import mime from 'mime';
 import dotenv from "dotenv";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Redis } from "ioredis";
-import dotenv from 'dotenv';
+
 
 dotenv.config()
 

@@ -13,6 +13,8 @@ const io = new Server({ cors: '*' })
 
 const subscriber = new Redis(process.env.REDIS_ID)
 
+console.log("redis id",process.env.REDIS_ID)
+
 const app = express()
 const PORT = process.env.PORT
 app.use(cors());

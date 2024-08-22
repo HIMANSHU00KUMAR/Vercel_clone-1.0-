@@ -25,7 +25,7 @@ const GitHubLogin = () => {
     if (code) {
       try {
         const response = await axios.post(
-          "http://localhost:5000/auth/github/callback",
+          "http://localhost:5001/auth/github/callback",
           { code }
         );
         const { access_token, user } = response.data;
