@@ -17,27 +17,43 @@ const CLIENT_ID = 'Ov23liRF2DZxKXgwErs3';
 const CLIENT_SECRET = '888e4980263f6d627ac061b1926963d76799554f';
 
 app.post('/auth/github/callback', async (req, res) => {
-    const { code } = req.body;
+  const { code } = req.body;
 
-    try {
-        const tokenResponse = await axios.post(
-          'https://github.com/login/oauth/access_token',
-          {
-            client_id:CLIENT_ID,
-            client_secret:CLIENT_SECRET,
-            code,
-          },
-          {
-            headers: {
-              Accept: 'application/json',
-            },
-          }
-        );
-    
-        res.json({ access_token: tokenResponse.data.access_token });
-      } catch (error) {
-        res.status(500).json({ error: 'Failed to exchange code for access token' });
+  try {
+    // Step 1: Exchange the code for an access token
+    const tokenResponse = await axios.post(
+      'https://github.com/login/oauth/access_token',
+      {
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        code,
+      },
+      {
+        headers: {
+          Accept: 'application/json',
+        },
       }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+
+    if (!accessToken) {
+      return res.status(401).json({ error: 'Failed to obtain access token' });
+    }
+
+    // Step 2: Fetch the authenticated user's info
+    const userResponse = await axios.get('https://api.github.com/user', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    // Step 3: Send the user info and access token back to the frontend
+    res.json({ user: userResponse.data, access_token: accessToken });
+  } catch (error) {
+    console.error('Error fetching user info:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch user info' });
+  }
 });
 
 const PORT = process.env.PORT;

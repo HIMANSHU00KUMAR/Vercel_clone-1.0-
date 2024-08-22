@@ -1,48 +1,54 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const GitHubLogin: React.FC = () => {
-  const clientID = 'Ov23liRF2DZxKXgwErs3';
-  const redirectURI = 'http://localhost:5173/auth/github/callback';
+const GitHubLogin = () => {
+  console.log("Entering GitHubLogin component");
   const navigate = useNavigate();
 
-  const loginWithGitHub = () => {
-    console.log("click login....")
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectURI}`;
-  };
-
   const handleGitHubCallback = async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    const storedToken = localStorage.getItem("github_access_token");
 
-    console.log("code === ",code)
+    // If the access token is already in localStorage, use it directly
+    if (storedToken) {
+      console.log("Access token found in localStorage");
+      navigate("/repos");
+      return;
+    }
+
+    // If no token is found, continue with the GitHub OAuth process
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    console.log("OAuth code received:", code);
 
     if (code) {
       try {
-        const tokenResponse = await axios.post('http://localhost:5000/auth/github/callback', { code });
-        const { access_token } = tokenResponse.data;
+        const response = await axios.post(
+          "http://localhost:5000/auth/github/callback",
+          { code }
+        );
+        const { access_token, user } = response.data;
 
-        localStorage.setItem('github_access_token', access_token);
-        navigate('/repos');
-      } catch (error) {
-        console.error('Error fetching access token:', error);
+        console.log("Received access token:", access_token);
+        console.log("Received user info:", user);
+
+        // Store the access token and user info in localStorage
+        localStorage.setItem("github_access_token", access_token);
+        localStorage.setItem("github_user", JSON.stringify(user.login));
+
+        navigate("/repos");
+      } catch (error:any) {
+        console.error("Error fetching access token:", error.response?.data || error.message);
       }
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleGitHubCallback();
   }, []);
 
-  return (
-    <div className="flex justify-center align-middle my-80">
-      <button className="bg-green-500 text-xl rounded-md font-bold p-2 " onClick={loginWithGitHub}>
-      Login with GitHub
-    </button>
-    </div>
-    
-  );
+  return <div>GitHubLogin is loading...</div>;
 };
 
 export default GitHubLogin;
