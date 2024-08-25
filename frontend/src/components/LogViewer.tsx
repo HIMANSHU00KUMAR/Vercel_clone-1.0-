@@ -10,7 +10,7 @@ const LogViewer: React.FC<LogViewerProps> = ({ deployID }) => {
   const logs = useSocket(deployID);
 
   return (
-    <div className="bg-gray-100 p-4 mt-6 rounded shadow">
+    <div className="bg-gray-600 p-4 mt-6 rounded shadow">
       <h1 className="text-2xl font-bold mb-4">Logs for Deployment ID: {deployID}</h1>
       <div className="bg-white p-4 rounded shadow">
         {logs.length > 0 ? (

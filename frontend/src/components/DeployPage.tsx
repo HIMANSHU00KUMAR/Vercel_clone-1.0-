@@ -9,47 +9,45 @@ const DeployPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [deployID, setDeployID] = useState<string | null>(null);
 
-
-  console.log("deploy url",deployUrl);
-
-  const handleSubmit = async () => {
-    if (!repoUrl) return;
-
-    console.log("handle submit cickcked",repoUrl)
-
-    setLoading(true);
-
-    try {
-      const response = await fetch('http://localhost:9000/project', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ gitURL: repoUrl }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch deployment URL');
-      }
-
-      const data = await response.json();
-      setDeployUrl(data.data.url);
-      setDeployID(data.data.projectSlug);
-    } catch (error) {
-      console.error('Error:', error);
-      setDeployUrl(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
   useEffect(() => {
+    let isSubmitted = false; // Flag to track submission status
+
+    const handleSubmit = async () => {
+      if (!repoUrl || loading || isSubmitted) return;
+
+      setLoading(true);
+      isSubmitted = true; // Set flag to true
+
+      try {
+        const response = await fetch('http://localhost:9000/project', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ gitURL: repoUrl }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch deployment URL');
+        }
+
+        const data = await response.json();
+        console.log("handle submit clicked",data);
+        setDeployUrl(data.data.url);
+        setDeployID(data.data.projectSlug);
+      } catch (error) {
+        console.error('Error:', error);
+        setDeployUrl(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     handleSubmit();
-  },[repoUrl]);
+  }, [repoUrl]); // Note: the dependency array remains unchanged
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
       {loading ? (
         <p>Deploying... Please wait.</p>
       ) : (
@@ -66,7 +64,6 @@ const DeployPage: React.FC = () => {
               {deployUrl}
             </a>
           </div>
-          
         )
       )}
       {deployID && <LogViewer deployID={deployID} />}

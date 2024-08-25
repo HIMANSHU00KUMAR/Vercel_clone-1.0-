@@ -11,12 +11,11 @@ import { Redis } from "ioredis";
 dotenv.config()
 
 
-const publisher = new Redis(process.env.REDIS_ID)
+const publisher = new Redis('')
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
 
 const PROJECT_ID = process.env.PROJECT_ID
 
@@ -25,10 +24,10 @@ function publishLog(log) {
 }
 
 const s3Client=new S3Client({
-    region:process.env.REGION,
+    region:'',
     credentials: {
-        accessKeyId: process.env.ACCESS_ID,
-        secretAccessKey: process.env.SECRET_KEY
+        accessKeyId: '',
+        secretAccessKey: ''
     }
 })
 
@@ -69,7 +68,7 @@ async function init(){
             const contentType = mime.getType(filePath);
 
             const command = new PutObjectCommand({
-                Bucket: process.env.BUCKET_NAME,
+                Bucket: 'your-s3-bucket-name',
                 Key: `__outputs/${PROJECT_ID}/${file}`,
                 Body: fs.createReadStream(filePath),
                 ContentType:contentType
